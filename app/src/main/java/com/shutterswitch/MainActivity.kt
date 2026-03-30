@@ -14,8 +14,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -254,7 +252,7 @@ fun LargeShutterToggle(
             ) {
                 // Power icon indicator
                 Icon(
-                    imageVector = if (isOn) Icons.Default.Check else Icons.Default.Close,
+                    painter = painterResource(id = if (isOn) R.drawable.ic_sun else R.drawable.ic_moon),
                     contentDescription = "Toggle Icon",
                     modifier = Modifier.size(32.dp),
                     tint = if (isOn) Color(0xFF001A22) else Color(0xFF223344)

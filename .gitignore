@@ -1,29 +1,57 @@
-# Gradle files
-.gradle/
+# Built artifacts
+bin/
+gen/
+out/
 build/
+.gradle/
 
-# Android Studio files
+# IDE files
 .idea/
 *.iml
-local.properties
-captures/
-.externalNativeBuild/
-.cxx/
-*.jks
-*.keystore
-*.apk
-*.ap_
-*.dex
-*.class
+*.iws
 
-# System files
-.DS_Store
-Thumbs.db
+# Local configuration file (sdk path, etc)
+local.properties
 
 # Log files
 *.log
 
-# Temp files
-*.tmp
+# Keystore files
+*.jks
+*.keystore
+
+# Google Play Services
+.google_play_services/
+
+# Android Studio captures
+captures/
+
+# NDK build
+.externalNativeBuild/
+.cxx/
+
+# Gradle
+default.properties
+
+# Kotlin
+.kotlin/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Heap dumps
+*.hprof
+
+# Backup files
 *.bak
+*.tmp
 *.swp
+
+# APK/AAB build outputs
+*.apk
+*.ap_
+*.aab
+
+# Output metadata
+output-metadata.json

@@ -120,7 +120,7 @@ class WakeLockService : Service() {
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("No Sleep — Active")
             .setContentText("Screen will remain on. Device will not sleep.")
-            .setSmallIcon(android.R.drawable.ic_lock_idle_lock)
+            .setSmallIcon(R.drawable.logo)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
