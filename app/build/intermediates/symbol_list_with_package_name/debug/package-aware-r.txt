@@ -52,6 +52,11 @@ drawable ic_call_answer_video
 drawable ic_call_answer_video_low
 drawable ic_call_decline
 drawable ic_call_decline_low
+drawable ic_github
+drawable ic_lightbulb
+drawable ic_linkedin
+drawable ic_sun
+drawable ic_website
 drawable logo
 drawable notification_action_background
 drawable notification_bg

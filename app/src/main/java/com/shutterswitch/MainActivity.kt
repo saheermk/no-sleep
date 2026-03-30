@@ -23,6 +23,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -306,11 +307,18 @@ fun InfoCard(isOn: Boolean) {
             modifier = Modifier.padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Icon(
+                painter = painterResource(id = if (isOn) R.drawable.ic_sun else R.drawable.ic_lightbulb),
+                contentDescription = null,
+                modifier = Modifier.size(28.dp),
+                tint = if (isOn) Color(0xFFAAEEFF) else Color(0xFF88AABB)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = if (isOn)
-                    "☀️ Screen is forced ON\nYour device will not sleep while this is active."
+                    "Screen is forced ON\nYour device will not sleep while this is active."
                 else
-                    "💡 Quick Tip:\nPull down your Quick Settings (notification panel), tap the edit icon, and add the 'No Sleep' tile for easy access!",
+                    "Quick Tip:\nPull down your Quick Settings (notification panel), tap the edit icon, and add the 'No Sleep' tile for easy access!",
                 fontSize = 14.sp,
                 color = if (isOn) Color(0xFFAAEEFF) else Color(0xFF88AABB),
                 textAlign = TextAlign.Center,
@@ -352,27 +360,65 @@ fun DeveloperInfo() {
                 horizontalArrangement = Arrangement.spacedBy(20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "🌐 Website",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFFAAEEFF),
-                    modifier = Modifier.clickable { uriHandler.openUri("https://saheermk.pages.dev") }
-                )
-                Text(
-                    text = "💼 LinkedIn",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFFAAEEFF),
-                    modifier = Modifier.clickable { uriHandler.openUri("https://in.linkedin.com/in/saheermk") }
-                )
-                Text(
-                    text = "💻 GitHub",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFFAAEEFF),
-                    modifier = Modifier.clickable { uriHandler.openUri("https://github.com/saheermk/") }
-                )
+                // Website
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable { uriHandler.openUri("https://saheermk.pages.dev") }.padding(4.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_website),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = Color(0xFFAAEEFF)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "Website",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFFAAEEFF)
+                    )
+                }
+
+                // LinkedIn
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable { uriHandler.openUri("https://in.linkedin.com/in/saheermk") }.padding(4.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_linkedin),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = Color(0xFFAAEEFF)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "LinkedIn",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFFAAEEFF)
+                    )
+                }
+
+                // GitHub
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable { uriHandler.openUri("https://github.com/saheermk/") }.padding(4.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_github),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = Color(0xFFAAEEFF)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "GitHub",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFFAAEEFF)
+                    )
+                }
             }
         }
     }

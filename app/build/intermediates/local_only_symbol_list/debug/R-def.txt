@@ -1,5 +1,10 @@
 R_DEF: Internal format may change without notice
 local
+drawable ic_github
+drawable ic_lightbulb
+drawable ic_linkedin
+drawable ic_sun
+drawable ic_website
 drawable logo
 string app_name
 style Theme.ShutterSwitch
