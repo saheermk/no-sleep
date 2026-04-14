@@ -45,7 +45,7 @@ jobs:
 
       - name: Rename APKs
         run: |
-          mv "${{ steps.sign_app.outputs.signedReleaseFile }}" "app/build/outputs/apk/release/no sleep.apk"
+          mv "app/build/outputs/apk/release/app-release-unsigned-signed.apk" "app/build/outputs/apk/release/no sleep.apk"
           mv "app/build/outputs/apk/release/app-release-unsigned.apk" "app/build/outputs/apk/release/no sleep(unsigned).apk"
 
       - name: Upload Signed APK as Artifact
