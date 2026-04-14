@@ -29,23 +29,35 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
-
-      - name: Build Release APK (Unsigned)
+      - name: Build APKs
         run: ./gradlew assembleRelease
 
-      - name: Upload Debug APK as Artifact
-        uses: actions/upload-artifact@v4
+      - name: Sign APK
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app
         with:
-          name: NoSleep-Debug-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
 
-      - name: Upload Release APK as Artifact
+      - name: Rename APKs
+        run: |
+          mv "${{ steps.sign_app.outputs.signedReleaseFile }}" "app/build/outputs/apk/release/no sleep.apk"
+          mv "app/build/outputs/apk/release/app-release-unsigned.apk" "app/build/outputs/apk/release/no sleep(unsigned).apk"
+
+      - name: Upload Signed APK as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: NoSleep-Release-Unsigned-APK
-          path: app/build/outputs/apk/release/app-release-unsigned.apk
+          name: NoSleep-Signed-APK
+          path: "app/build/outputs/apk/release/no sleep.apk"
+
+      - name: Upload Unsigned APK as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NoSleep-Unsigned-APK
+          path: "app/build/outputs/apk/release/no sleep(unsigned).apk"
 
       # Automatically publish a GitHub Release when a tag (e.g., 'v1.0.0') is pushed
       - name: Create GitHub Release
@@ -53,8 +65,8 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            app/build/outputs/apk/debug/app-debug.apk
-            app/build/outputs/apk/release/app-release-unsigned.apk
+            "app/build/outputs/apk/release/no sleep.apk"
+            "app/build/outputs/apk/release/no sleep(unsigned).apk"
           name: Release ${{ github.ref_name }}
           generate_release_notes: true
         env:
