@@ -113,6 +113,20 @@ No Sleep is designed to be "Greener" than standard wake lock tools.
 
 ## ❓ Troubleshooting & FAQ
 
+### **"Access Denied" or "Restricted Setting" Error**
+
+On Android 13+, you may see a message saying "Restricted setting" or "Access denied" when trying to allow **Display over other apps**. This is a security feature for apps installed from outside the Play Store.
+
+**How to fix it:**
+
+1. Open your phone **Settings**.
+2. Go to **Apps** > **See all apps**.
+3. Find and tap on **No Sleep**.
+4. Tap the **⋮ (three dots)** menu in the top-right corner.
+5. Tap **"Allow restricted settings"**.
+6. Authenticate (PIN/Fingerprint).
+7. Now, go back into the app and you will be able to enable the permission!
+
 ### **The screen still turns off!**
 
 - Ensure you have granted the **"Display over other apps"** permission.
