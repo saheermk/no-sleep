@@ -45,20 +45,20 @@ jobs:
 
       - name: Rename APKs
         run: |
-          mv "app/build/outputs/apk/release/app-release-unsigned-signed.apk" "app/build/outputs/apk/release/no sleep.apk"
-          mv "app/build/outputs/apk/release/app-release-unsigned.apk" "app/build/outputs/apk/release/no sleep(unsigned).apk"
+          mv app/build/outputs/apk/release/app-release-unsigned-signed.apk app/build/outputs/apk/release/NoSleep.apk
+          mv app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/NoSleep-unsigned.apk
 
       - name: Upload Signed APK as Artifact
         uses: actions/upload-artifact@v4
         with:
           name: NoSleep-Signed-APK
-          path: "app/build/outputs/apk/release/no sleep.apk"
+          path: app/build/outputs/apk/release/NoSleep.apk
 
       - name: Upload Unsigned APK as Artifact
         uses: actions/upload-artifact@v4
         with:
           name: NoSleep-Unsigned-APK
-          path: "app/build/outputs/apk/release/no sleep(unsigned).apk"
+          path: app/build/outputs/apk/release/NoSleep-unsigned.apk
 
       # Automatically publish a GitHub Release when a tag (e.g., 'v1.0.0') is pushed
       - name: Create GitHub Release
@@ -66,8 +66,8 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            "app/build/outputs/apk/release/no sleep.apk"
-            "app/build/outputs/apk/release/no sleep(unsigned).apk"
+            app/build/outputs/apk/release/NoSleep.apk
+            app/build/outputs/apk/release/NoSleep-unsigned.apk
           name: Release ${{ github.ref_name }}
           generate_release_notes: true
         env:
