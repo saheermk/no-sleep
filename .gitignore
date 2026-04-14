@@ -9,6 +9,9 @@ build/
 .idea/
 *.iml
 *.iws
+*.ipr
+atlassian-ide-plugin.xml
+workspace.xml
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -35,6 +38,7 @@ default.properties
 
 # Kotlin
 .kotlin/
+.kotlinc/
 
 # OS Files
 .DS_Store
@@ -55,3 +59,15 @@ Thumbs.db
 
 # Output metadata
 output-metadata.json
+
+# Crashlytics
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
+
+# Project-specific
+java_pid*.hprof
+*.keystore
+*.jks
+release.keystore

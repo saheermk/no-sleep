@@ -93,8 +93,8 @@ _Benefit_: Provides a failsafe to ensure the map stays visible even if the app's
 
 ## Permissions Breakdown
 
-| Permission              | Why it's required                                                                                                 |
-| :---------------------- | :---------------------------------------------------------------------------------------------------------------- |
+| Permission            | Why it's required                                                                                                 |
+| :-------------------- | :---------------------------------------------------------------------------------------------------------------- |
 | `SYSTEM_ALERT_WINDOW` | Critical for the "Invisible Overlay" method. It allows the app to draw over other apps to force the screen state. |
 | `FOREGROUND_SERVICE`  | Required on Android 9+ to keep the service running reliably in the background.                                    |
 | `WAKE_LOCK`           | Used as a secondary fallback and for system compatibility.                                                        |
@@ -124,6 +124,23 @@ No Sleep is designed to be "Greener" than standard wake lock tools.
 2. Tap the **Pencil (Edit)** icon.
 3. Scroll down to "Available Tiles."
 4. Find **No Sleep** and drag it to the top.
+
+---
+
+## Keystore Setup & Encoding
+
+To use the automated release workflow, you need to provide your Android Keystore in a format GitHub Secrets can handle (Base64 string).
+
+### **How to get the Base64-encoded Keystore**
+
+If you have your `.jks` or `.keystore` file, run the following command in your terminal (Linux/macOS):
+
+```bash
+base64 -w 0 your_keystore.jks
+```
+
+- **`your_keystore.jks`**: Replace this with the actual path to your keystore file.
+- **Copy the output**: The command will print a long string of characters. Copy this entire string and paste it into the `SIGNING_KEY` secret in your GitHub repository settings.
 
 ---
 
