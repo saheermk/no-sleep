@@ -188,7 +188,7 @@ fun ShutterSwitchScreen(
     LaunchedEffect(Unit) {
         thread {
             try {
-                val url = URL("https://api.github.com/repos/saheermk/share-file/releases/latest")
+                val url = URL("https://api.github.com/repos/saheermk/no-sleep/releases/latest")
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
                 connection.setRequestProperty("Accept", "application/vnd.github.v3+json")
