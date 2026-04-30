@@ -8,6 +8,15 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Toast
+import android.app.DownloadManager
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.IntentFilter
+import android.os.Environment
+import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
+import kotlin.concurrent.thread
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -47,8 +56,33 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.RequestPermission()
     ) { /* Notification will show if granted; silently ignored if denied */ }
 
+    private var downloadId: Long = -1
+
+    private val downloadReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+            if (id == downloadId && downloadId != -1L) {
+                val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                val uri = downloadManager.getUriForDownloadedFile(downloadId)
+                if (uri != null) {
+                    val installIntent = Intent(Intent.ACTION_VIEW).apply {
+                        setDataAndType(uri, "application/vnd.android.package-archive")
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    }
+                    startActivity(installIntent)
+                }
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(downloadReceiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), Context.RECEIVER_EXPORTED)
+        } else {
+            registerReceiver(downloadReceiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
+        }
 
         // Request notification permission on Android 13+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -74,7 +108,10 @@ class MainActivity : ComponentActivity() {
             ShutterSwitchTheme {
                 ShutterSwitchScreen(
                     onSwitchOn = { startWakeLockService() },
-                    onSwitchOff = { stopWakeLockService() }
+                    onSwitchOff = { stopWakeLockService() },
+                    packageManager = packageManager,
+                    packageName = packageName,
+                    onDownloadRequest = { url -> downloadAndInstallUpdate(url) }
                 )
             }
         }
@@ -99,8 +136,25 @@ class MainActivity : ComponentActivity() {
         stopService(intent)
     }
 
+    private fun downloadAndInstallUpdate(url: String) {
+        val request = DownloadManager.Request(Uri.parse(url)).apply {
+            setTitle("App Update")
+            setDescription("Downloading latest version...")
+            setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "app-update.apk")
+        }
+        val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        downloadId = downloadManager.enqueue(request)
+        Toast.makeText(this, "Downloading update...", Toast.LENGTH_SHORT).show()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        try {
+            unregisterReceiver(downloadReceiver)
+        } catch (e: Exception) {
+            // Ignore if not registered
+        }
         // Stop the service when activity is destroyed to avoid orphaned wake locks
         stopWakeLockService()
     }
@@ -113,9 +167,55 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ShutterSwitchScreen(
     onSwitchOn: () -> Unit,
-    onSwitchOff: () -> Unit
+    onSwitchOff: () -> Unit,
+    packageManager: PackageManager,
+    packageName: String,
+    onDownloadRequest: (String) -> Unit
 ) {
     val isOn by WakeLockService.isServiceRunning.collectAsState()
+
+    val currentVersion = remember {
+        try {
+            packageManager.getPackageInfo(packageName, 0).versionName ?: "1.0"
+        } catch (e: Exception) {
+            "1.0"
+        }
+    }
+    var showUpdateDialog by remember { mutableStateOf(false) }
+    var newVersion by remember { mutableStateOf("") }
+    var apkUrl by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        thread {
+            try {
+                val url = URL("https://api.github.com/repos/saheermk/share-file/releases/latest")
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "GET"
+                connection.setRequestProperty("Accept", "application/vnd.github.v3+json")
+                if (connection.responseCode == 200) {
+                    val response = connection.inputStream.bufferedReader().readText()
+                    val json = JSONObject(response)
+                    val tagName = json.getString("tag_name")
+                    val cleanTagName = tagName.removePrefix("v")
+                    
+                    if (cleanTagName != currentVersion) {
+                        val assets = json.getJSONArray("assets")
+                        for (i in 0 until assets.length()) {
+                            val asset = assets.getJSONObject(i)
+                            if (asset.getString("name").endsWith(".apk")) {
+                                newVersion = cleanTagName
+                                apkUrl = asset.getString("browser_download_url")
+                                showUpdateDialog = true
+                                break
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 
     // Animate background gradient
     val bgColorTop by animateColorAsState(
@@ -132,6 +232,27 @@ fun ShutterSwitchScreen(
         targetValue = if (isOn) 1.4f else 0.6f,
         animationSpec = spring(stiffness = Spring.StiffnessLow), label = "glow"
     )
+
+    if (showUpdateDialog) {
+        AlertDialog(
+            onDismissRequest = { showUpdateDialog = false },
+            title = { Text("Update Available") },
+            text = { Text("A new version (v$newVersion) is available. Would you like to update?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showUpdateDialog = false
+                    onDownloadRequest(apkUrl)
+                }) {
+                    Text("Update")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showUpdateDialog = false }) {
+                    Text("Later")
+                }
+            }
+        )
+    }
 
     Box(
         modifier = Modifier

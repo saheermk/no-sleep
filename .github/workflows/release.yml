@@ -29,8 +29,21 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Extract version info
+        id: version_info
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            TAG_NAME="${{ github.ref_name }}"
+            VERSION_NAME="${TAG_NAME#v}"
+            echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
+            echo "VERSION_CODE=${{ github.run_number }}" >> $GITHUB_ENV
+          else
+            echo "VERSION_NAME=1.0" >> $GITHUB_ENV
+            echo "VERSION_CODE=1" >> $GITHUB_ENV
+          fi
+
       - name: Build APKs
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleRelease -PversionName=${{ env.VERSION_NAME }} -PversionCode=${{ env.VERSION_CODE }}
 
       - name: Sign APK
         uses: ilharp/sign-android-release@v1
